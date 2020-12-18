@@ -1,11 +1,14 @@
 
 class Game {
     constructor() {
-        var canvas = document.querySelector("#myCanvas");
+        this.canvas = document.querySelector("#myCanvas");
+
         this.engine = new BABYLON.Engine(this.canvas,true);
 
-        this.scene = null ;
+        this.scene  ;
 
+        window.addEventListener("resize", () => this.engine.resize() );
+        
         // Run the game
         this.run();
     }
@@ -48,12 +51,17 @@ class Game {
     run(){
         this.scene = this.createScene();
         
-        var _this = this;
-        this.engine.runRenderLoop(function(){// main game Loop (called by default 60 times/s)
-            console.log("Scene " + _this.scene)
-            _this.scene.render();
-        }); 
+        /*this.engine.runRenderLoop(function(){// main game Loop (called by default 60 times/s)
+            console.log("Scene " + this);
+            this.scene.render();
+        }); */
+
+        this.engine.runRenderLoop( () => {
+            console.log("Scene " + this.scene);
+            this.scene.render();
+        });
     }
+    
 }
 
 var game = new Game();
