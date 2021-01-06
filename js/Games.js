@@ -17,8 +17,8 @@ class Game {
 
         window.addEventListener("resize", () => this.engine.resize() );
         
-        Game.gameState = ""
-        Game.playerSpeed = 1
+        Game.gameState = "";
+        Game.playerSpeed ;
         
         // Run the game
         this.run();
@@ -31,6 +31,7 @@ class Game {
     buildGround(width , height ,positionZ){
         var groundMat = new BABYLON.StandardMaterial("groundMat");
         groundMat.diffuseTexture = new BABYLON.Texture("assets/grass.jpg");
+        groundMat.diffuseColor = new BABYLON.Color3.Green();
         groundMat.zOffset = 1;
         groundMat.specularColor = BABYLON.Color3.Black();
         groundMat.diffuseTexture.uScale = 10;
@@ -90,7 +91,7 @@ class Game {
     createScene(){
         let scene = new BABYLON.Scene(this.engine); //scene.clearColor = new BABYLON.Color3.White(); (the background)
         
-        this.ground = this.buildGround(10,200,0);
+        this.ground = this.buildGround(20,200,0);
         this.player = this.createPlayer();
 
         var camera = new BABYLON.FollowCamera("followCamera",new BABYLON.Vector3(this.player.position.x , this.player.position.y , this.player.position.z),scene);
@@ -113,7 +114,7 @@ class Game {
         this.scene = this.createScene();
 
         this.listen();
-
+        
         this.engine.runRenderLoop( () => {
             this.player.position.x = Game.speedX; 
             if(Game.gameState === "playing"){
@@ -130,7 +131,7 @@ class Game {
 }
 
 Game.gameState = "";
-Game.playerSpeed = 0;
+Game.playerSpeed = 0.5;
 Game.speedX = 0;
 
 /*
