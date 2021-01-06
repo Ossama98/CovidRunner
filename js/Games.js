@@ -54,7 +54,7 @@ class Game {
         this.ground = this.buildGround(15,200,0);
         this.player = this.createPlayer();
 
-        var camera = new BABYLON.FollowCamera("followCamera",new BABYLON.Vector3.Zero(),scene);
+        var camera = new BABYLON.FollowCamera("followCamera",new BABYLON.Vector3(this.player.position.x , this.player.position.y , this.player.position.z),scene);
         camera.lockedTarget = this.player;//the Camera follow the box
         camera.radius = -10 ; //distance away to stay from the target
         camera.heightOffset = 4; //position(height) relative to your target
