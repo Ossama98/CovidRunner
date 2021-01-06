@@ -1,11 +1,19 @@
 
+window.onload = init;
+function init() {
+    // called when the DOM is ready
+    var game = new Game();
+}
+
 class Game {
     constructor() {
         this.canvas = document.querySelector("#myCanvas");
 
         this.engine = new BABYLON.Engine(this.canvas,true);
 
-        this.scene  ;
+        this.scene ;
+        this.ground;
+        this.player;
 
         window.addEventListener("resize", () => this.engine.resize() );
         
@@ -13,13 +21,22 @@ class Game {
         this.run();
     }
 
-    buildGround(){
-        //var groundMat = new BABYLON.StandardMaterial("groundMat");
-        //groundMat.diffuseTexture = new BABYLON.Texture("assets/grass.jpg");
-    
-        var ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 15, height: 16 });
-        //ground.material = groundMat;
-    
+    buildGround(width , height ,positionZ){
+        var groundMat = new BABYLON.StandardMaterial("groundMat");
+        groundMat.diffuseTexture = new BABYLON.Texture("assets/grass.jpg");
+        groundMat.zOffset = 1;
+        groundMat.specularColor = BABYLON.Color3.Black();
+        groundMat.diffuseTexture.uScale = 10;
+        groundMat.diffuseTexture.vScale = 30;
+
+
+        var ground = BABYLON.MeshBuilder.CreateGround("ground", { width: width, height: height });
+        ground.material = groundMat;
+
+        ground.receiveShadows = true;
+
+        ground.position.z = positionZ;
+
         return ground; 
     }
     
@@ -32,29 +49,27 @@ class Game {
     }
 
     createScene(){
-        var scene = new BABYLON.Scene(this.engine); //scene.clearColor = new BABYLON.Color3.White(); (the background)
+        let scene = new BABYLON.Scene(this.engine); //scene.clearColor = new BABYLON.Color3.White(); (the background)
         
-        var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 14, new BABYLON.Vector3(0, 0, 0));
-        camera.attachControl(this.canvas, true);
+        this.ground = this.buildGround(15,200,0);
+        this.player = this.createPlayer();
+
+        var camera = new BABYLON.FollowCamera("followCamera",new BABYLON.Vector3.Zero(),scene);
+        camera.lockedTarget = this.player;//the Camera follow the box
+        camera.radius = -10 ; //distance away to stay from the target
+        camera.heightOffset = 4; //position(height) relative to your target
+        //camera.attachControl(canvas, true);
 
         var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0));
         
-        //this.ground = this.buildGround();
-        //this.player = this.createPlayer();
-        
         // background
-        //new BABYLON.Layer("background", "assets/background.jpg", this.scene, true);
+        new BABYLON.Layer("background", "assets/background.jpg", this.scene, true);
 
         return scene ;
     }
 
     run(){
         this.scene = this.createScene();
-        
-        /*this.engine.runRenderLoop(function(){// main game Loop (called by default 60 times/s)
-            console.log("Scene " + this);
-            this.scene.render();
-        }); */
 
         this.engine.runRenderLoop( () => {
             console.log("Scene " + this.scene);
@@ -63,5 +78,3 @@ class Game {
     }
     
 }
-
-var game = new Game();

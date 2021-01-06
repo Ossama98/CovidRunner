@@ -21,7 +21,7 @@ window.addEventListener("DOMContentLoaded" , function(){
         camera.lockedTarget = player;//the Camera follow the box
         camera.radius = -10 ; //distance away to stay from the target
         camera.heightOffset = 4; //position(height) relative to your target
-        camera.attachControl(canvas, true);
+        //camera.attachControl(canvas, true);
 
         var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0));
                
@@ -31,6 +31,7 @@ window.addEventListener("DOMContentLoaded" , function(){
         return scene ;
     }
     var scene = createScene();
+    
     engine.runRenderLoop(function(){// main game Loop (called by default 60 times/s)
         listen();
         if(gameState === "playing"){
@@ -54,7 +55,7 @@ if(player.position.z >= ground._height/2 ){
         */
 
 function listen(){
-    window.addEventListener("keyup",function(event){
+    window.addEventListener("keydown",function(event){
         switch(event.key){
             case ' ':
                 gameState = "playing";
