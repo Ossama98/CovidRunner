@@ -94,11 +94,11 @@ class Game {
         this.ground = this.buildGround(20,200,0);
         this.player = this.createPlayer();
 
-        var camera = new BABYLON.FollowCamera("followCamera",new BABYLON.Vector3(this.player.position.x , this.player.position.y , this.player.position.z),scene);
-        //var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10, new BABYLON.Vector3(this.player.position.x , this.player.position.y , this.player.position.z),scene);
-        camera.lockedTarget = this.player;//the Camera follow the box
-        camera.radius = -10 ; //distance away to stay from the target
-        camera.heightOffset = 4; //position(height) relative to your target
+        //var camera = new BABYLON.FollowCamera("followCamera",new BABYLON.Vector3(this.player.position.x , this.player.position.y , this.player.position.z),scene);
+        var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, new BABYLON.Vector3(this.player.position.x , this.player.position.y , this.player.position.z),scene);
+        //camera.lockedTarget = this.player;//the Camera follow the box
+        //camera.radius = -10 ; //distance away to stay from the target
+        //camera.heightOffset = 4; //position(height) relative to your target
         //camera.attachControl(this.canvas, true);
 
         //light
@@ -112,10 +112,12 @@ class Game {
 
     run(){
         this.scene = this.createScene();
+        //this.scene.activeCamera.target.z = this.player.position.z;
 
         this.listen();
         
         this.engine.runRenderLoop( () => {
+            this.scene.activeCamera.target.z = this.player.position.z ;//to make the camera follow the player
             this.player.position.x = Game.speedX; 
             if(Game.gameState === "playing"){
                 this.player.position.z  += Game.playerSpeed;
@@ -133,17 +135,3 @@ class Game {
 Game.gameState = "";
 Game.playerSpeed = 0.5;
 Game.speedX = 0;
-
-/*
-this.engine.runRenderLoop( () => {
-            this.listen();
-            if(Game.gameState === "playing"){
-                this.player.position.z  += Game.playerSpeed;
-                if(this.player.position.z >= 100){
-                    Game.gameState = "end";
-                    this.player.position.z = - this.ground._height/2;
-                }
-            }    
-            this.scene.render();
-        });
-*/
