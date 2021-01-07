@@ -26,8 +26,8 @@ class Game {
         this.run();
 
         Game.speedX = 0;
-        this.groundW = this.ground._width;
-        this.groundH = this.ground._height;
+        this.groundW ;//ground width
+        this.groundH ;//ground height
     }
 
     buildGround(width , height ,positionZ){
@@ -86,7 +86,11 @@ class Game {
         let scene = new BABYLON.Scene(this.engine); //scene.clearColor = new BABYLON.Color3.White(); (the background)
         
         this.ground = this.buildGround(20,200,0);
-        this.player.createPlayer( this.ground._height);
+        this.groundW = this.ground._width;
+        this.groundH = this.ground._height;
+
+        this.player.createPlayer( this.groundH );
+        
         this.virus.createVirus();
 
         //var camera = new BABYLON.FollowCamera("followCamera",new BABYLON.Vector3(this.player.position.x , this.player.position.y , this.player.position.z),scene);
@@ -121,7 +125,7 @@ class Game {
                 this.player.model.position.z  += Game.playerSpeed;
                 if(this.player.model.position.z >= this.groundH/2){//was >=100
                     Game.gameState = "end";
-                    this.player.model.position.z = - this.ground._height/2;
+                    this.player.model.position.z = - this.groundH/2;
                 }
             }    
             this.scene.render();
