@@ -25,6 +25,9 @@ class Game {
         // Run the game
         this.run();
 
+        //play a background music
+        this.playMusic();
+
         this.displayedMessage;
 
         Game.speedX = 0;
@@ -50,6 +53,16 @@ class Game {
         ground.position.z = positionZ;
 
         return ground; 
+    }
+
+    playMusic() {// Load the sound and play it automatically once ready
+        // Adding a Continous Sound (we can play it only once with setInterval(() => sound.play(), 3000);) 
+        const sound = new BABYLON.Sound("sound", "https://mainline.i3s.unice.fr/mooc/SkywardBound/assets/sounds/humbug.mp3", 
+        this.scene,null, { loop: true, autoplay: true });
+
+        //var music = new BABYLON.Sound("Music", "https://mainline.i3s.unice.fr/mooc/SkywardBound/assets/sounds/humbug.mp3", this.scene, function(){
+          //  music.play();
+        //});
     }
 
     addText(message){
