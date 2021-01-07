@@ -26,7 +26,7 @@ class Game {
         this.run();
 
         //play a background music
-        this.playMusic();
+        //this.playMusic();
 
         this.displayedMessage;
 
