@@ -1,121 +1,135 @@
-var ground;
-var player;
-var playerSpeed = 0.3;
-var gameState = "start";
-window.addEventListener("DOMContentLoaded" , function(){
-    var canvas = document.querySelector("#myCanvas");
-    var engine = new BABYLON.Engine(canvas,true);
+import Player from "/js/Player.js" 
+import Virus from "/js/Virus.js"
+window.onload = init;
+function init() {
+    // called when the DOM is ready
+    var game = new Game();
+}
 
-    var createScene = function(){
-        var scene = new BABYLON.Scene(engine); 
+class Game {
+    constructor() {
+        this.canvas = document.querySelector("#myCanvas");
+
+        this.engine = new BABYLON.Engine(this.canvas,true);
+
+        this.scene ;
+        this.ground;
+        this.player = new Player("Ossama");
+        this.virus = new Virus("Covid");
+
+        window.addEventListener("resize", () => this.engine.resize() );
         
-        ground = buildGround(15,200,0);
-        player = createPlayer();
-
-        /*var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10, new BABYLON.Vector3(0, 0, 0),scene);
-        camera.setTarget(player)
-        camera.radius = -5;*/
+        Game.gameState = "";
+        Game.playerSpeed ;
         
+        // Run the game
+        this.run();
 
-        var camera = new BABYLON.FollowCamera("followCamera",new BABYLON.Vector3.Zero(),scene);
-        camera.lockedTarget = player;//the Camera follow the box
-        camera.radius = -10 ; //distance away to stay from the target
-        camera.heightOffset = 4; //position(height) relative to your target
-        //camera.attachControl(canvas, true);
+        Game.speedX = 0;
+        this.groundW = this.ground._width;
+        this.groundH = this.ground._height;
+    }
 
+    buildGround(width , height ,positionZ){
+        var groundMat = new BABYLON.StandardMaterial("groundMat");
+        groundMat.diffuseTexture = new BABYLON.Texture("assets/grass.jpg");
+        groundMat.diffuseColor = new BABYLON.Color3.Green();
+        groundMat.zOffset = 1;
+        groundMat.specularColor = BABYLON.Color3.Black();
+        groundMat.diffuseTexture.uScale = 10;
+        groundMat.diffuseTexture.vScale = 30;
+
+
+        var ground = BABYLON.MeshBuilder.CreateGround("ground", { width: width, height: height });
+        ground.material = groundMat;
+
+        ground.receiveShadows = true;
+
+        ground.position.z = positionZ;
+
+        return ground; 
+    }
+
+    listen(){
+        window.addEventListener("keydown",(event) => {
+            switch(event.key){
+                case ' ':
+                    Game.gameState = "playing";
+                    break;
+                case 'q':
+                    if(Game.speedX === this.groundW/4){
+                        console.log("q if")
+                        Game.speedX = 0;
+                    }
+                    else{
+                        console.log("q else")
+                        Game.speedX = - this.groundW/4;
+                    }
+                    break;
+                case 'd':
+                    if(Game.speedX === - this.groundW/4){
+                        console.log("d if")
+                        Game.speedX = 0;
+                    }
+                    else{
+                        console.log("d else")
+                        Game.speedX = this.groundW/4;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        })
+    }
+    
+    createScene(){
+        let scene = new BABYLON.Scene(this.engine); //scene.clearColor = new BABYLON.Color3.White(); (the background)
+        
+        this.ground = this.buildGround(20,200,0);
+        this.player.createPlayer( this.ground._height);
+        this.virus.createVirus();
+
+        //var camera = new BABYLON.FollowCamera("followCamera",new BABYLON.Vector3(this.player.position.x , this.player.position.y , this.player.position.z),scene);
+        var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, new BABYLON.Vector3(this.player.model.position.x , this.player.model.position.y , this.player.model.position.z),scene);
+        //camera.lockedTarget = this.player;//the Camera follow the box
+        //camera.radius = -10 ; //distance away to stay from the target
+        //camera.heightOffset = 4; //position(height) relative to your target
+        //camera.attachControl(this.canvas, true);
+
+        //light
         var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0));
-               
+        
         // background
-        new BABYLON.Layer("background", "assets/background.jpg", scene, true);
+        new BABYLON.Layer("background", "assets/background.jpg", this.scene, true);
 
         return scene ;
     }
-    var scene = createScene();
+
+    run(){
+        this.scene = this.createScene();
+
+        this.listen();
+        
+        this.engine.runRenderLoop( () => {
+            this.scene.activeCamera.target.z = this.player.model.position.z ;//to make the camera follow the player
+            this.player.model.position.x = Game.speedX; 
+            if(Game.gameState === "playing"){
+                if(this.player.model.position.z === this.virus.model.position.z && this.player.model.position.x === this.virus.model.position.x){//check collision
+                    console.log("RIPPPP")
+                    Game.gameState = "end";
+                }
+                this.player.model.position.z  += Game.playerSpeed;
+                if(this.player.model.position.z >= this.groundH/2){//was >=100
+                    Game.gameState = "end";
+                    this.player.model.position.z = - this.ground._height/2;
+                }
+            }    
+            this.scene.render();
+        });
+    }
     
-    engine.runRenderLoop(function(){// main game Loop (called by default 60 times/s)
-        listen();
-        if(gameState === "playing"){
-            player.position.z  += playerSpeed;
-            if(player.position.z >= 100){
-                gameState = "end";
-                player.position.z = - ground._height/2;
-            }
-        }       
-        scene.render();
-    });
-});
-
-/*
-if(player.position.z >= ground._height/2 ){
-            reachedEnd = true;
-            //ground.dispose();
-            //ground = buildGround(ground._width , ground._height , player.position.z / 2);
-            ground.position.z = player.position.z /2;
-        }
-        */
-
-function listen(){
-    window.addEventListener("keydown",function(event){
-        switch(event.key){
-            case ' ':
-                gameState = "playing";
-                break;
-            case 'q':
-                if(player.position.x - 0.1 <= 0 ){
-                    player.position.x = ground._width/4;
-                }
-                else{
-                    player.position.x -= 0.1;
-                }
-                break;
-            case 'd':
-                player.position.x += 0.1;
-                break;
-            default:
-                break;
-        }
-    })
 }
 
-
-function buildGround(width , height ,positionZ){
-    var groundMat = new BABYLON.StandardMaterial("groundMat");
-    groundMat.diffuseTexture = new BABYLON.Texture("assets/grass.jpg");
-    groundMat.zOffset = 1;
-    groundMat.specularColor = BABYLON.Color3.Black();
-    groundMat.diffuseTexture.uScale = 10;
-    groundMat.diffuseTexture.vScale = 30;
-
-
-    var ground = BABYLON.MeshBuilder.CreateGround("ground", { width: width, height: height });
-    ground.material = groundMat;
-
-    ground.receiveShadows = true;
-
-    ground.position.z = positionZ;
-
-    return ground; 
-}
-
-function createPlayer(){
-    const player = BABYLON.MeshBuilder.CreateBox("box",{});//{ width: 2, height: 1.5, depth: 3 }
-    player.position.y = 0.5;
-    player.position.z = - ground._height/2;
-    return player;
-}
-
-
-/*
-if(reachedEnd){
-            player.position.z -= 0.1;
-            if(player.position.z <= - ground._height/2){
-                reachedEnd = false;
-            }
-        }
-        else{
-            player.position.z += 0.1;
-            if(player.position.z >= ground._height/2 ){
-                reachedEnd = true;
-            }
-        }
-*/
+Game.gameState = "";
+Game.playerSpeed = 1;
+Game.speedX = 0;
