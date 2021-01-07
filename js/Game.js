@@ -19,11 +19,13 @@ class Game {
 
         window.addEventListener("resize", () => this.engine.resize() );
         
-        Game.gameState = "";
+        Game.gameState = ""; //"" or "playing" or "gameOver" or "end"
         Game.playerSpeed ;
         
         // Run the game
         this.run();
+
+        this.displayedMessage;
 
         Game.speedX = 0;
         this.groundW ;//ground width
@@ -50,11 +52,35 @@ class Game {
         return ground; 
     }
 
+    addText(message){
+      // GUI
+      var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+      var text1 = new BABYLON.GUI.TextBlock();
+      text1.text = message;
+      text1.color = "red";
+      text1.fontSize = 24;
+      advancedTexture.addControl(text1);    
+
+      this.displayedMessage = text1;
+    }
+
     listen(){
         window.addEventListener("keydown",(event) => {
             switch(event.key){
                 case ' ':
-                    Game.gameState = "playing";
+                    if(Game.gameState === ""){
+                      Game.gameState = "playing";
+                    }
+                    else if(Game.gameState === "gameOver" ){
+                      this.displayedMessage.text = "";
+                      Game.gameState = "";
+                      this.player.model.position.y = this.player.initialPosY;
+                      this.player.model.position.z = this.player.initialPosZ;
+                    }
+                    else if(Game.gameState === "end"){
+                        Game.gameState = "playing";
+                    }
                     break;
                 case 'q':
                     if(Game.speedX === this.groundW/4){
@@ -89,9 +115,10 @@ class Game {
         this.groundW = this.ground._width;
         this.groundH = this.ground._height;
 
-        this.player.createPlayer( this.groundH );
-        
-        this.virus.createVirus();
+        this.player.createPlayer(this.groundH);
+
+        this.virus.createVirus(0);
+        //this.virus.createMutipleViruses(10,this.groundH);
 
         //var camera = new BABYLON.FollowCamera("followCamera",new BABYLON.Vector3(this.player.position.x , this.player.position.y , this.player.position.z),scene);
         var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, new BABYLON.Vector3(this.player.model.position.x , this.player.model.position.y , this.player.model.position.z),scene);
@@ -115,12 +142,14 @@ class Game {
         this.listen();
         
         this.engine.runRenderLoop( () => {
+          console.log("GameState : " + Game.gameState)
             this.scene.activeCamera.target.z = this.player.model.position.z ;//to make the camera follow the player
             this.player.model.position.x = Game.speedX; 
             if(Game.gameState === "playing"){
                 if(this.player.model.position.z === this.virus.model.position.z && this.player.model.position.x === this.virus.model.position.x){//check collision
                     console.log("RIPPPP")
-                    Game.gameState = "end";
+                    Game.gameState = "gameOver";
+                    this.addText("Game Over . Press space to play again");
                 }
                 this.player.model.position.z  += Game.playerSpeed;
                 if(this.player.model.position.z >= this.groundH/2){//was >=100

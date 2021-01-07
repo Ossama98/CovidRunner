@@ -2,6 +2,9 @@ export default class Player{
     constructor(name){
         this.name = name;
         this.model ;
+        this.initialPosX;//initial player positions , initialized after a call to createPlayer
+        this.initialPosY;
+        this.initialPosZ;
     }
 
     createPlayer(groundHeight){
@@ -9,6 +12,9 @@ export default class Player{
         player.position.y = 0.5;
         player.position.z = - groundHeight/2;
         
+        this.initialPosY = player.position.y;
+        this.initialPosZ = player.position.z;
+
         this.model = player;
     }
 
