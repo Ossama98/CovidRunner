@@ -35,7 +35,7 @@ class Game {
         this.playerMoveSound = new Howl({
             urls: ['https://mainline.i3s.unice.fr/mooc/SkywardBound/assets/sounds/plop.mp3'],
             onload: function () {
-                
+
             }
         });
 
@@ -68,9 +68,9 @@ class Game {
 
     playMusic() {// Load the sound and play it automatically once ready
         // Adding a Continous Sound (we can play it only once with setInterval(() => sound.play(), 3000);)
-        this.music = new BABYLON.Sound("Music", "https://mainline.i3s.unice.fr/mooc/SkywardBound/assets/sounds/humbug.mp3", this.scene, () => {
-            this.music.play();
-        });
+        this.music = new BABYLON.Sound("sound", "https://mainline.i3s.unice.fr/mooc/SkywardBound/assets/sounds/humbug.mp3", 
+        this.scene,null, { loop: true, autoplay: true });
+        
     }
 
     addText(message){
