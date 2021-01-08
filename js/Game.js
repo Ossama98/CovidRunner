@@ -17,6 +17,8 @@ class Game {
         this.player = new Player("Ossama");
         this.virus = new Virus("Covid");
 
+        this.nbVirusToCreate = 10 ;
+
         window.addEventListener("resize", () => this.engine.resize() );
         
         Game.gameState = ""; //"" or "playing" or "gameOver" or "end"
@@ -97,21 +99,17 @@ class Game {
                     break;
                 case 'q':
                     if(Game.speedX === this.groundW/4){
-                        console.log("q if")
                         Game.speedX = 0;
                     }
                     else{
-                        console.log("q else")
                         Game.speedX = - this.groundW/4;
                     }
                     break;
                 case 'd':
                     if(Game.speedX === - this.groundW/4){
-                        console.log("d if")
                         Game.speedX = 0;
                     }
                     else{
-                        console.log("d else")
                         Game.speedX = this.groundW/4;
                     }
                     break;
@@ -122,7 +120,7 @@ class Game {
     }
     
     createScene(){
-        let scene = new BABYLON.Scene(this.engine); //scene.clearColor = new BABYLON.Color3.White(); (the background)
+        this.scene = new BABYLON.Scene(this.engine); 
         
         this.ground = this.buildGround(20,200,0);
         this.groundW = this.ground._width;
@@ -130,14 +128,9 @@ class Game {
 
         this.player.createPlayer(this.groundH);
 
-        //this.virus.createVirus(0);
-        this.virus.createMutipleViruses(10,this.groundH,this.groundW);
+        this.virus.createMutipleViruses(this.nbVirusToCreate,this.groundH,this.groundW);
 
-        //var camera = new BABYLON.FollowCamera("followCamera",new BABYLON.Vector3(this.player.position.x , this.player.position.y , this.player.position.z),scene);
-        var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, new BABYLON.Vector3(this.player.model.position.x , this.player.model.position.y , this.player.model.position.z),scene);
-        //camera.lockedTarget = this.player;//the Camera follow the box
-        //camera.radius = -10 ; //distance away to stay from the target
-        //camera.heightOffset = 4; //position(height) relative to your target
+        var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, new BABYLON.Vector3(this.player.model.position.x , this.player.model.position.y , this.player.model.position.z),this.scene);
         //camera.attachControl(this.canvas, true);
 
         //light
@@ -146,7 +139,7 @@ class Game {
         // background
         new BABYLON.Layer("background", "assets/background.jpg", this.scene, true);
 
-        return scene ;
+        return this.scene ;
     }
 
     checkInfection(){
@@ -164,17 +157,10 @@ class Game {
         this.listen();
         
         this.engine.runRenderLoop( () => {
-          console.log("GameState : " + Game.gameState)
             this.scene.activeCamera.target.z = this.player.model.position.z ;//to make the camera follow the player
             this.player.model.position.x = Game.speedX; 
             if(Game.gameState === "playing"){
-                /*if(this.player.model.position.z === this.virus.model.position.z && this.player.model.position.x === this.virus.model.position.x){//check collision
-                    console.log("RIPPPP")
-                    Game.gameState = "gameOver";
-                    this.addText("Game Over . Press space to play again");
-                }*/
                 if(this.checkInfection()){
-                    console.log("RIPPPP");
                     Game.gameState = "gameOver";
                     this.addText("Game Over .\n   You got infected by a virus . \n Press space to play again.");
                     this.player.infected = false;
