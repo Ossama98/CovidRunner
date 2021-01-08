@@ -5,6 +5,7 @@ export default class Player{
         this.initialPosX;//initial player positions , initialized after a call to createPlayer
         this.initialPosY;
         this.initialPosZ;
+        this.infected = false;
     }
 
     createPlayer(groundHeight){

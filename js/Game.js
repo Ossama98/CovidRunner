@@ -130,8 +130,8 @@ class Game {
 
         this.player.createPlayer(this.groundH);
 
-        this.virus.createVirus(0);
-        //this.virus.createMutipleViruses(10,this.groundH);
+        //this.virus.createVirus(0);
+        this.virus.createMutipleViruses(10,this.groundH,this.groundW);
 
         //var camera = new BABYLON.FollowCamera("followCamera",new BABYLON.Vector3(this.player.position.x , this.player.position.y , this.player.position.z),scene);
         var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, new BABYLON.Vector3(this.player.model.position.x , this.player.model.position.y , this.player.model.position.z),scene);
@@ -149,6 +149,15 @@ class Game {
         return scene ;
     }
 
+    checkInfection(){
+        this.virus.models.forEach((virus) => {
+            if(this.player.model.position.z === virus.position.z && this.player.model.position.x === virus.position.x){
+                this.player.infected = true;
+            }
+        });
+        return this.player.infected;
+    }
+
     run(){
         this.scene = this.createScene();
 
@@ -159,10 +168,16 @@ class Game {
             this.scene.activeCamera.target.z = this.player.model.position.z ;//to make the camera follow the player
             this.player.model.position.x = Game.speedX; 
             if(Game.gameState === "playing"){
-                if(this.player.model.position.z === this.virus.model.position.z && this.player.model.position.x === this.virus.model.position.x){//check collision
+                /*if(this.player.model.position.z === this.virus.model.position.z && this.player.model.position.x === this.virus.model.position.x){//check collision
                     console.log("RIPPPP")
                     Game.gameState = "gameOver";
                     this.addText("Game Over . Press space to play again");
+                }*/
+                if(this.checkInfection()){
+                    console.log("RIPPPP");
+                    Game.gameState = "gameOver";
+                    this.addText("Game Over .\n   You got infected by a virus . \n Press space to play again.");
+                    this.player.infected = false;
                 }
                 this.player.model.position.z  += Game.playerSpeed;
                 if(this.player.model.position.z >= this.groundH/2){//was >=100
