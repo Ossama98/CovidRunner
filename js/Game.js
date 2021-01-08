@@ -27,8 +27,17 @@ class Game {
         // Run the game
         this.run();
 
+        this.music;
+        this.musicPlaying = true;
         //play a background music
-        //this.playMusic();
+        this.playMusic();
+
+        this.playerMoveSound = new Howl({
+            urls: ['https://mainline.i3s.unice.fr/mooc/SkywardBound/assets/sounds/plop.mp3'],
+            onload: function () {
+                
+            }
+        });
 
         this.displayedMessage;
 
@@ -58,13 +67,10 @@ class Game {
     }
 
     playMusic() {// Load the sound and play it automatically once ready
-        // Adding a Continous Sound (we can play it only once with setInterval(() => sound.play(), 3000);) 
-        const sound = new BABYLON.Sound("sound", "https://mainline.i3s.unice.fr/mooc/SkywardBound/assets/sounds/humbug.mp3", 
-        this.scene,null, { loop: true, autoplay: true });
-
-        //var music = new BABYLON.Sound("Music", "https://mainline.i3s.unice.fr/mooc/SkywardBound/assets/sounds/humbug.mp3", this.scene, function(){
-          //  music.play();
-        //});
+        // Adding a Continous Sound (we can play it only once with setInterval(() => sound.play(), 3000);)
+        this.music = new BABYLON.Sound("Music", "https://mainline.i3s.unice.fr/mooc/SkywardBound/assets/sounds/humbug.mp3", this.scene, () => {
+            this.music.play();
+        });
     }
 
     addText(message){
@@ -100,19 +106,32 @@ class Game {
                 case 'q':
                     if(Game.speedX === this.groundW/4){
                         Game.speedX = 0;
+                        this.playerMoveSound .play();
                     }
                     else{
                         Game.speedX = - this.groundW/4;
+                        this.playerMoveSound .play();
                     }
                     break;
                 case 'd':
                     if(Game.speedX === - this.groundW/4){
                         Game.speedX = 0;
+                        this.playerMoveSound .play();
                     }
                     else{
                         Game.speedX = this.groundW/4;
+                        this.playerMoveSound .play();
                     }
                     break;
+                case 'p':
+                    if(this.musicPlaying){
+                        this.music.stop();
+                        this.musicPlaying = false;
+                    }
+                    else{
+                        this.music.play();
+                        this.musicPlaying = true;
+                    }
                 default:
                     break;
             }
