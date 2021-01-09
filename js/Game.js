@@ -12,10 +12,12 @@ class Game {
 
         this.engine = new BABYLON.Engine(this.canvas,true);
 
+        
+
         this.scene ;
         this.ground;
-        this.player = new Player("Ossama");
-        this.virus = new Virus("Covid");
+        this.player ;//= new Player("Ossama");
+        this.virus ;//= new Virus("Covid");
 
         this.nbVirusToCreate = 10 ;
 
@@ -23,6 +25,9 @@ class Game {
         
         Game.gameState = ""; //"" or "playing" or "gameOver" or "end"
         Game.playerSpeed ;
+        
+        this.groundW = 20;//ground width
+        this.groundH = 200;//ground height
         
         // Run the game
         this.run();
@@ -42,8 +47,6 @@ class Game {
         this.displayedMessage;
 
         Game.speedX = 0;
-        this.groundW ;//ground width
-        this.groundH ;//ground height
     }
 
     buildGround(width , height ,positionZ){
@@ -137,19 +140,50 @@ class Game {
             }
         })
     }
+
+    /**
+     * This method gives a random integer between min and max
+     * @param {*} min 
+     * @param {*} max 
+     */
+    getRandomIntInclusive(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min +1)) + min;
+    }
+
+    createMutipleViruses(nbVirus){
+        var virus;
+        for(var i=0 ; i<nbVirus ; i++){
+            var randomPositionZ = this.getRandomIntInclusive(- this.groundH/2,this.groundH/2);
+            var randomPositionX = this.getRandomIntInclusive(0,2);//0,1,or2
+            if(randomPositionX === 0){//creates the virus at the left lane
+                virus = new Virus(this.virus , randomPositionZ , - this.groundW/4);
+                this.virus.models.push(virus);
+            }
+            else if(randomPositionX === 1){//creates the virus in the middle lane
+                virus = new Virus(this.virus , randomPositionZ , 0);
+                this.virus.models.push(virus);
+            }
+            else{//randomPositionX === 2 (//creates the virus at the right lane)
+                virus = new Virus(this.virus , randomPositionZ , this.groundW/4);
+                this.virus.models.push(virus);
+            }
+        }
+    }
     
     createScene(){
         this.scene = new BABYLON.Scene(this.engine); 
         
-        this.ground = this.buildGround(20,200,0);
-        this.groundW = this.ground._width;
-        this.groundH = this.ground._height;
+        this.ground = this.buildGround(this.groundW ,this.groundH,0);
 
-        this.player.createPlayer(this.groundH);
+        //this.player.createPlayer(this.groundH);
+        this.player = new Player("Ossama",this.groundH)
 
-        this.virus.createMutipleViruses(this.nbVirusToCreate,this.groundH,this.groundW);
+        this.virus = new Virus("Covid");
+        this.createMutipleViruses(this.nbVirusToCreate);
 
-        var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, new BABYLON.Vector3(this.player.model.position.x , this.player.model.position.y , this.player.model.position.z),this.scene);
+        var camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, new BABYLON.Vector3(this.player.initialPosX , this.player.initialPosY , this.player.initialPosZ),this.scene);
         //camera.attachControl(this.canvas, true);
 
         //light
@@ -163,7 +197,7 @@ class Game {
 
     checkInfection(){
         this.virus.models.forEach((virus) => {
-            if(this.player.model.position.z === virus.position.z && this.player.model.position.x === virus.position.x){
+            if(this.player.model.position.z === virus.model.position.z && this.player.model.position.x === virus.model.position.x){
                 this.player.infected = true;
             }
         });
