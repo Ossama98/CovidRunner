@@ -5,10 +5,10 @@ export default class Virus{
         this.model.position.y = 0.5;
         this.model.position.z = positionZ ;
         this.model.position.x = positionX;
-
+        
         this.models = [];
     }
-    
+
     toString(){
         return this.name;
     }

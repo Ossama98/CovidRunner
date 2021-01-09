@@ -12,7 +12,7 @@ class Game {
 
         this.engine = new BABYLON.Engine(this.canvas,true);
 
-        
+        this.divFps = document.getElementById("fps");//fps
 
         this.scene ;
         this.ground;
@@ -22,9 +22,6 @@ class Game {
         this.nbVirusToCreate = 10 ;
 
         window.addEventListener("resize", () => this.engine.resize() );
-        
-        Game.gameState = ""; //"" or "playing" or "gameOver" or "end"
-        Game.playerSpeed ;
         
         this.groundW = 20;//ground width
         this.groundH = 200;//ground height
@@ -45,8 +42,6 @@ class Game {
         });
 
         this.displayedMessage;
-
-        Game.speedX = 0;
     }
 
     buildGround(width , height ,positionZ){
@@ -210,6 +205,7 @@ class Game {
         this.listen();
         
         this.engine.runRenderLoop( () => {
+            this.divFps.innerHTML = this.engine.getFps().toFixed() + " fps";
             this.scene.activeCamera.target.z = this.player.model.position.z ;//to make the camera follow the player
             this.player.model.position.x = Game.speedX; 
             if(Game.gameState === "playing"){
@@ -230,6 +226,6 @@ class Game {
     
 }
 
-Game.gameState = "";
+Game.gameState = "";//"" or "playing" or "gameOver" or "end"
 Game.playerSpeed = 1;
 Game.speedX = 0;
