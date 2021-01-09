@@ -16,8 +16,8 @@ class Game {
 
         this.scene ;
         this.ground;
-        this.player ;//= new Player("Ossama");
-        this.virus ;//= new Virus("Covid");
+        this.player ;
+        this.virus ;
 
         this.nbVirusToCreate = 10 ;
 
@@ -44,6 +44,12 @@ class Game {
         this.displayedMessage;
     }
 
+    /**
+     * This method builds a ground
+     * @param {*} width the width of the ground
+     * @param {*} height the height of the ground
+     * @param {*} positionZ the position on the Z axis of the ground
+     */
     buildGround(width , height ,positionZ){
         var groundMat = new BABYLON.StandardMaterial("groundMat");
         groundMat.diffuseTexture = new BABYLON.Texture("assets/grass.jpg");
@@ -64,6 +70,9 @@ class Game {
         return ground; 
     }
 
+    /**
+     * This method plays a music in the background
+     */
     playMusic() {// Load the sound and play it automatically once ready
         // Adding a Continous Sound (we can play it only once with setInterval(() => sound.play(), 3000);)
         this.music = new BABYLON.Sound("sound", "https://mainline.i3s.unice.fr/mooc/SkywardBound/assets/sounds/humbug.mp3", 
@@ -71,6 +80,10 @@ class Game {
         
     }
 
+    /**
+     * This method display a text on the screen
+     * @param {*} message the message to display
+     */
     addText(message){
       // GUI
       var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
@@ -84,6 +97,9 @@ class Game {
       this.displayedMessage = text1;
     }
 
+    /**
+     * This method contains a listener for different keyboard input keys
+     */
     listen(){
         window.addEventListener("keydown",(event) => {
             switch(event.key){
@@ -104,21 +120,21 @@ class Game {
                 case 'q':
                     if(Game.speedX === this.groundW/4){
                         Game.speedX = 0;
-                        this.playerMoveSound .play();
+                        this.playerMoveSound.play();
                     }
                     else{
                         Game.speedX = - this.groundW/4;
-                        this.playerMoveSound .play();
+                        this.playerMoveSound.play();
                     }
                     break;
                 case 'd':
                     if(Game.speedX === - this.groundW/4){
                         Game.speedX = 0;
-                        this.playerMoveSound .play();
+                        this.playerMoveSound.play();
                     }
                     else{
                         Game.speedX = this.groundW/4;
-                        this.playerMoveSound .play();
+                        this.playerMoveSound.play();
                     }
                     break;
                 case 'p':
@@ -147,6 +163,10 @@ class Game {
         return Math.floor(Math.random() * (max - min +1)) + min;
     }
 
+    /**
+     * This method creates viruses in random positions on the ground
+     * @param {*} nbVirus is the number of viruses to create
+     */
     createMutipleViruses(nbVirus){
         var virus;
         for(var i=0 ; i<nbVirus ; i++){
@@ -167,6 +187,9 @@ class Game {
         }
     }
     
+    /**
+     * This method creates the scene of the game
+     */
     createScene(){
         this.scene = new BABYLON.Scene(this.engine); 
         
@@ -190,6 +213,9 @@ class Game {
         return this.scene ;
     }
 
+    /**
+     * This method checks if the player get in contact with a virus
+     */
     checkInfection(){
         this.virus.models.forEach((virus) => {
             if(this.player.model.position.z === virus.model.position.z && this.player.model.position.x === virus.model.position.x){
@@ -199,6 +225,9 @@ class Game {
         return this.player.infected;
     }
 
+    /**
+     * Render loop
+     */
     run(){
         this.scene = this.createScene();
 
