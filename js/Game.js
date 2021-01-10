@@ -27,6 +27,8 @@ class Game {
         
         this.groundW = 20;//ground width
         this.groundH = 400;//ground height
+
+        this.playerSpeed = 1;
         
         // Run the game
         this.run();
@@ -199,7 +201,7 @@ class Game {
         this.ground = this.buildGround(this.groundW ,this.groundH,0);
 
         //this.player.createPlayer(this.groundH);
-        this.player = new Player("Ossama",this.groundH)
+        this.player = new Player("Ossama",this.groundH,this.playerSpeed);
 
         this.virus = new Virus("Covid");
         this.createMutipleViruses(this.nbVirusToCreate);
@@ -249,7 +251,7 @@ class Game {
                     this.player.infected = false;
                     Game.scorePoints = 0;
                 }
-                this.player.model.position.z  += Game.playerSpeed;
+                this.player.model.position.z  += this.player.speed;
                 if(this.player.model.position.z >= this.groundH/2){//was >=100
                     Game.gameState = "end";
                     this.player.model.position.z = - this.groundH/2;
@@ -262,6 +264,5 @@ class Game {
 }
 
 Game.gameState = "";//"" or "playing" or "gameOver" or "end"
-Game.playerSpeed = 1;
 Game.speedX = 0;
 Game.scorePoints = 0;
