@@ -19,5 +19,6 @@ The player is a person(a box) who tries to avoid any contact with viruses(sphere
     The player and viruses can be 3D models instead of a box and spheres.
     The player can jump over a virus.
     The player can take a mask from the ground and if so the viruses become harmless for some seconds.
+    The game can be with levels that get harder or it can be an endless runner.
     Maybe make the game a multiplayer game in the second semester course ... It can be like a survival race between 
     two players or the player who eradicates more viruses in a limited time wins ...
