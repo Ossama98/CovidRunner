@@ -14,6 +14,8 @@ class Game {
 
         this.divFps = document.getElementById("fps");//fps
 
+        this.divScore = document.getElementById("score");//fps
+
         this.scene ;
         this.ground;
         this.player ;
@@ -24,7 +26,7 @@ class Game {
         window.addEventListener("resize", () => this.engine.resize() );
         
         this.groundW = 20;//ground width
-        this.groundH = 200;//ground height
+        this.groundH = 400;//ground height
         
         // Run the game
         this.run();
@@ -112,6 +114,7 @@ class Game {
                       Game.gameState = "";
                       this.player.model.position.y = this.player.initialPosY;
                       this.player.model.position.z = this.player.initialPosZ;
+                      this.divScore.innerHTML = Game.scorePoints + " pts";
                     }
                     else if(Game.gameState === "end"){
                         Game.gameState = "playing";
@@ -218,7 +221,7 @@ class Game {
      */
     checkInfection(){
         this.virus.models.forEach((virus) => {
-            if(this.player.model.position.z === virus.model.position.z && this.player.model.position.x === virus.model.position.x){
+            if(Math.trunc(this.player.model.position.z) === virus.model.position.z && Math.trunc(this.player.model.position.x) === virus.model.position.x){
                 this.player.infected = true;
             }
         });
@@ -238,10 +241,13 @@ class Game {
             this.scene.activeCamera.target.z = this.player.model.position.z ;//to make the camera follow the player
             this.player.model.position.x = Game.speedX; 
             if(Game.gameState === "playing"){
+                Game.scorePoints += 1;
+                this.divScore.innerHTML = Game.scorePoints + " pts";
                 if(this.checkInfection()){
                     Game.gameState = "gameOver";
                     this.addText("Game Over .\n   You got infected by a virus . \n Press space to play again.");
                     this.player.infected = false;
+                    Game.scorePoints = 0;
                 }
                 this.player.model.position.z  += Game.playerSpeed;
                 if(this.player.model.position.z >= this.groundH/2){//was >=100
@@ -258,3 +264,4 @@ class Game {
 Game.gameState = "";//"" or "playing" or "gameOver" or "end"
 Game.playerSpeed = 1;
 Game.speedX = 0;
+Game.scorePoints = 0;
