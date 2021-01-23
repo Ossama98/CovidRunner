@@ -1,5 +1,5 @@
-import Player from "/js/Player.js"
-import Virus from "/js/Virus.js"
+import Player from "../js/Player.js"
+import Virus from "../js/Virus.js"
 window.onload = init;
 function init() {
     // called when the DOM is ready
