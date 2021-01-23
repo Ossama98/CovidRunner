@@ -1,4 +1,4 @@
-import Player from "/js/Player.js" 
+import Player from "/js/Player.js"
 import Virus from "/js/Virus.js"
 window.onload = init;
 function init() {
